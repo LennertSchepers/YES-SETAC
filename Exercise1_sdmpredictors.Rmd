@@ -1,0 +1,260 @@
+---
+title: 'Exercise 1 - sdmpredictors'
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    df_print: paged
+---
+
+The purpose of this exercise is to check the maximum sea surface temparature near
+
+
+* Key West (24.545°N, 81.775°W)
+* Barbados (13.185° N, -59.440° W)
+* Porto (41.130° N, -8.882° W)?
+
+***
+
+<br>
+
+
+#### 1.1. Data: sdmpredictors
+
+Where can we look for the data?
+<http://www.bio-oracle.org/>
+
+##### 1.1.2 prepare R environment
+First, we load some R packages that we will use in this exercise
+```
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+library(sf) # spatial package
+library(ggplot2) # plotting
+library(sdmpredictors) # species distribution modeling layers => data layers
+```
+
+Now, we want to use the data from the sdmpredictors package
+
+##### 1.1.2 Look for correct data layer
+
+sdmpredictors contains several datasets, each containing several layers:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# list datasets of sdmpredictors package
+list_datasets()
+
+# list layers of Bio-ORACLE dataset
+list_layers(datasets="Bio-ORACLE")
+```
+
+##### 1.1.3 Download layer
+
+Now we store the data from the layer to R:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+sstmax <- load_layers("BO_sstmax")
+
+```
+
+***
+
+<br>
+
+#### 1.2 Plotting data
+
+##### 1.2.1 Base R Plot
+
+Let's try R's base plot:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# base plot
+plot(sstmax)
+```
+
+This is not so user friendly, let's try to make an interactive map.
+
+##### 1.2.2 Mapview interactive map
+
+With the 'mapview' package, you can easily create interactive maps.
+For more info, see <https://r-spatial.github.io/mapview/>
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# Make an interactive plot with the 'mapview' package:
+# more info: https://r-spatial.github.io/mapview/
+library('mapview')
+```
+
+if we just try `mapview(sstmax)`, there is an error. What does it say?
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+mapview(sstmax, layer.name = "max sst") # warning: what does it say?
+
+
+mapview(sstmax, layer.name = "max sst", maxpixels =  9331200) # takes a while to load!
+
+```
+
+***
+
+<br>
+
+
+#### 1.3 Points of interest
+##### 1.3.1 create dataframe
+
+Let's create a dataframe with our points of interest:
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+my.sites <- data.frame(
+  Name = c("Key West", "Barbados", "Porto"),
+  Lon = c(-81.775,-59.440,-8.882),
+  Lat = c(24.545,13.185,41.130))
+```
+##### 1.3.2 make spatial 'simple features' 
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# make spatial (simple features) dataset
+my.sites.sf <- st_as_sf(my.sites,
+                        coords=c("Lon","Lat"),
+                        crs = 4326) # WGS84
+```
+
+##### 1.3.3 base plot locations
+Again, R's base plotting capabilities are not ideal...
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# base plot
+plot(my.sites.sf) # not ideal
+```
+##### 1.3.3 interactive mapview map 
+An interactive map is a lot better, right?
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# interactive mapview map
+mapview(my.sites.sf) # much better
+```
+
+##### 1.3.3 visualizing both layers
+How do we visualize both of the layers?
+Just combine them with a plus sign: '+':
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# how to visualize both? combine them with '+'
+mapview(sstmax, layer.name = "max sst") +
+  mapview(my.sites.sf)
+```
+
+***
+
+<br>
+
+
+#### 1.4 extracting data
+Now, we want to get the sea surface temperature data at the exact location of our points.
+This is easily done with the `raster` package function `extract`:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# extract data from sstmax raster at the locations of my.sites.sf
+my.sites$BO_sstmax <- extract(sstmax,my.sites.sf)
+```
+
+***
+
+<br>
+
+
+#### 1.5 Plotting data in ggplot
+
+
+We will plot the data that we have with the *ggplot2* package:
+<https://ggplot2.tidyverse.org/>
+
+The grammar of graphics say that can build any graph with the same components:
+
+* the data(set)
+* aesthetics: how you position your data
+* a geometry: how to visualize the data points
+* (some additional styling)
+
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# plotting data with ggplot2
+# https://ggplot2.tidyverse.org/
+library(ggplot2)
+```
+
+Let's create an easy example with
+
+* data: `my.sites`
+* aesthetics: along x-axis the `Name` column, y-axis `BO_sstmax` (the temperature)
+* geometry: points
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# points
+ggplot(data = my.sites) +
+  geom_point(aes(x = Name, y = BO_sstmax))
+```
+
+
+If we improve the graph by:
+
+*  color filling the points by the sea surface temperature value
+*  use the same color scale as the sst map
+*  make the pionts a bit bigger
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+  # with different colors, a bit larger size
+  ggplot(data = my.sites) +
+    geom_point(aes(x = Name,
+                   y = BO_sstmax,
+                   color = BO_sstmax,
+                   size = 2)) +
+    scale_color_viridis_c(option = 'inferno') # same colorscale as map
+```
+
+We can change the geometry to a barplot:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# bar plot
+ggplot(data = my.sites) +
+  geom_col(aes(x = Name, y = BO_sstmax))
+```
+
+different colors, larger size (outline width):
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+  # again different colors, larger size:
+  ggplot(data = my.sites) +
+    geom_col(aes(x = Name,        # everything inside aes(), will be 'interpreted'
+                 y = BO_sstmax,
+                 fill = Name),
+                 size = 2,
+                 color = "black") # color : outline with graphs
+```
+Some more adjustments
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+  # color by sst max
+  ggplot(data = my.sites) +
+    geom_col(aes(x = Name,        # everything inside aes(), will be 'interpreted'
+                 y = BO_sstmax,
+                 fill = BO_sstmax),
+             color = "black") +
+             scale_fill_viridis_c(option = 'inferno') # color : outline with graphs
+```
+
+***
+
+<br>
+
+
+#### Exercise 1
+Adjust the code above to include 3 areas of your interest
+
+e.g. the location closest you your lab?
+
+#### Advanced exercise 1
+What is the temperature at different latitudes in the North Atlantic?
+
+e.g. at longitude -30, latitude from 0 to 60?
+ 
+
+#### Advanced exercise 2
+What is the minimum temperature?
+Can you plot:
+
+* the min temperature vs max temperature
+* min AND max temp in a plot?
+
+

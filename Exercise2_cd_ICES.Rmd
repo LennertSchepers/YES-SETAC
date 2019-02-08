@@ -1,0 +1,180 @@
+---
+title: 'Execise 2: Cadmium exceedance'
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+    toc_float: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Purpose of this exercise: try to solve this question:
+*How many times did the Cadmium concentration in sediment exceed the safe limit (ERL; Lyons et al., 2017) in 2015?
+
+***
+
+<br>
+
+
+### 2.1. Data: ICES
+
+
+We will download some EMODnet Biology species observations with the Download Toolbox:
+
+  * Go to <http://www.ices.dk/>
+  * Click ‘Explore Marine Data’
+  * Click ‘Environmental contaminants’
+  * On line ‘Contaminants and biological effects’ click on ‘per parameter’
+  * On search interface, search for 'Cd'
+  * In total you should see 69000 measurements, but in different matrices.
+  * So now select in ‘per matrix’ only sediment samples. Best is those ‘Sediment - <63 micron fraction’.
+  * Click the 'download' button and save the file as "20190208_Cd_data_ICES.csv""
+
+
+***
+
+<br>
+
+
+### 2.2. Data analysis in R
+
+Now we can start analyzing these data in R
+
+
+First, we load some R packages that we will use in this exercise
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+library(dplyr)      # package for data manipulation
+library(data.table) # package for fast reading of csv files
+library(sf)         # simple features
+library(mapview)    # interactive maps
+library(ggplot2)    # plotting
+```
+
+read the data:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+cd_data <- read.csv("data/20190208_Cd_data_ICES.csv")
+
+head(cd_data)
+
+```
+
+It seems that there are multiple units in this dataset!
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# it seems that there are different units used in this dataset!
+# create table with unit occurrences
+table(cd_data$Unit)
+
+```
+
+Ok, let's do a conversion by using some dplyr functions.
+
+The `%>%` is the 'pipe' operator, and is used to combine multiple actions
+This makes it easier to read:
+
+x `%>%` y `%>%` z, means 
+
+'take data x', do y with it and with this result, do z
+
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# manual conversion
+cd_data <- cd_data %>%
+  mutate(ugkg = case_when( Unit == 'ug/g'  ~ Value * 1000,
+                           Unit == 'mg/kg' ~ Value * 1000,
+                           Unit == 'g/g'   ~ Value * 1E9,
+                           Unit == 'ug/kg' ~ Value
+                           ),
+         Exceeded = as.numeric(ugkg >= 1200)
+  )
+
+```
+
+Make the data spatially aware (convert to 'sf' object):
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+cd_data_sf <- st_as_sf(cd_data,
+                       coords=c("Longitude..degrees_east.","Latitude..degrees_north."),
+                       crs = 4326, # WGS84
+                       remove = FALSE)
+
+
+```
+
+Plot the data:
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+mapview(cd_data_sf, zcol = "Exceeded",
+        viewer.suppress = FALSE)
+
+
+```
+
+Get back to our question:
+What data did we need only the year 2015.
+So convert to 'Date' format (Posixct)
+
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+
+# Now, what was the question? How many times is it exceeded in 2015?
+cd_data_sf$Date_posixct <- as.POSIXct(cd_data_sf$dd.mm.yyyyThh.mm.ss,
+                                             format = "%d/%m/%Y %H:%M",
+                                             tz = "UTC")
+```
+
+A quick check of the data:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+
+# quick check of the data
+ggplot(cd_data_sf) +
+  geom_histogram(aes(x = Date_posixct))
+
+```
+
+Subset the data to only include 2015: 
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+cd_data_sf_2015 <- cd_data_sf %>%
+  filter(Date_posixct > as.POSIXct("2015-01-01 01:00:00", tz="UTC") &
+         Date_posixct < as.POSIXct("2016-01-01 01:00:00", tz="UTC"))
+
+```
+
+plot the data:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+# plotting the data
+ggplot(cd_data_sf_2015) +
+  geom_point(aes(x = Date_posixct, y = ugkg)) +
+  geom_hline(yintercept =1200, color = "red")
+
+```
+
+some more interactive plots:
+```{r message=FALSE, warning=FALSE, error=FALSE, fig.align='center'}
+mapview(cd_data_sf_2015, zcol = "Exceeded",
+        viewer.suppress = FALSE) # to view in RStudio
+
+# where are the threshold values exceeded?
+mapview(cd_data_sf_2015[cd_data_sf_2015$Exceeded ==1,], zcol = "Exceeded",
+        viewer.suppress = FALSE) # to view in RStudio
+
+```
+
+So can you answer the question?
+
+***
+
+<br>
+
+
+#### Exercise 1
+How many times was the Cadmium threshold exceeded in 2015?
+
+
+#### Advanced exercises
+
+* In which estuaries are these located (look up on map)
+# In which year are the most exceedances?
