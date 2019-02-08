@@ -22,7 +22,7 @@ plot(sstmax)
 library('mapview')
 mapview(sstmax) # error: what does it say?
 mapview(sstmax, layer.name = "max sst") # warning: what does it say?
-mapview(sstmax, layer.name = "max sst", maxpixels =  9331200) # takes long!
+#mapview(sstmax, layer.name = "max sst", maxpixels =  9331200) # takes long!
 
 
 my.sites <- data.frame(
