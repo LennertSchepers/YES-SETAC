@@ -17,3 +17,8 @@ If you don’t have any R experience, please follow a basic introduction, for ex
 
 * The DataCamp free introduction to R: https://www.datacamp.com/courses/free-introduction-to-r
 *	Harvard intro to R: http://tutorials.iq.harvard.edu/R/Rintro/Rintro.html 
+
+
+Link to this repository in Jupyter notebooks (R + Python): [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/LennertSchepers/YES-SETAC/master)
+
+Link to this repository in RStudio: [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/LennertSchepers/YES-SETAC/master?urlpath=rstudio)
