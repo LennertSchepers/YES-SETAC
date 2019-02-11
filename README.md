@@ -33,9 +33,7 @@ Please bring along a laptop with R and Rstudio installed:
 
 ## Slides
 
-The Slides of this course are available here (or click on image below):
-
-https://docs.google.com/presentation/d/1TfKyJmyLWbiz_7BnEI7zfhT44O3oTiUirzY04PCd2x4/edit?usp=sharing
+The Slides of this course are available [here (or click on image below)](https://docs.google.com/presentation/d/1TfKyJmyLWbiz_7BnEI7zfhT44O3oTiUirzY04PCd2x4/edit?usp=sharing):
  
-![Slides](https://github.com/LennertSchepers/YES-SETAC/blob/master/images/First_Slide.jpg)
+[![Slides](https://github.com/LennertSchepers/YES-SETAC/blob/master/images/First_Slide.jpg)](https://docs.google.com/presentation/d/1TfKyJmyLWbiz_7BnEI7zfhT44O3oTiUirzY04PCd2x4/edit?usp=sharing)
 
