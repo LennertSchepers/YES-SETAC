@@ -20,4 +20,11 @@ If you don’t have any R experience, please follow a basic introduction, for ex
 
 
 
-Link to this repository in RStudio: [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/LennertSchepers/YES-SETAC/master?urlpath=rstudio)
+You can also work directly in an online RStudio environment if you click here: [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/LennertSchepers/YES-SETAC/master?urlpath=rstudio)
+
+The Slides of this course are available here (or click on image below):
+
+https://docs.google.com/presentation/d/1TfKyJmyLWbiz_7BnEI7zfhT44O3oTiUirzY04PCd2x4/edit?usp=sharing
+ 
+![Slides](https://github.com/LennertSchepers/YES-SETAC/blob/master/images/First_Slide.jpg)
+
