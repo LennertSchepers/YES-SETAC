@@ -1,6 +1,8 @@
 # YES-SETAC Course Marine Data Management
 This is the github repository with all necessary files for the R exercises of the course
+
 **Marine environmental data: principles of good data management and access to open data resources**
+
 given on 2018-02-08 at Ghent University as part of the YES-SETAC meeting (https://yes2019.setac.org/programme/courses/). 
 
 
