@@ -9,6 +9,8 @@ library(sf)
 library(dplyr)
 library(mapview)
 
+# test test
+
 # Then load the downloaded file
 fname <- 'data/20190208_Larus_fuscus_NZ_EMODnetBio.csv'
 Larus_fuscus_NZ <- fread(fname,
