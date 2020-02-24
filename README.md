@@ -3,7 +3,7 @@ This is the github repository with all necessary files for the R exercises of th
 
 **Marine environmental data: principles of good data management and access to open data resources**
 
-given on 2018-02-08 at Ghent University as part of the YES-SETAC meeting (https://yes2019.setac.org/programme/courses/). 
+given on 2019-02-08 at Ghent University as part of the YES-SETAC meeting (https://yes2019.setac.org/programme/courses/). 
 
 
 ## requirements
